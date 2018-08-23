@@ -8,7 +8,7 @@ def game_loop():
     game_exit = False
 
     pygame.init()
-    pygame.display.set_caption('Python Game')
+    pygame.display.set_caption('Temple Guardians')
     game_screen = pygame.display.set_mode(
         (game_settings.SCREEN_WIDTH, game_settings.SCREEN_HEIGHT),
         pygame.DOUBLEBUF | pygame.HWSURFACE,
