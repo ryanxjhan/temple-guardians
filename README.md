@@ -1,6 +1,6 @@
 # FighterTheater
 
-![show](art/show.gif)
+![show](art/show.png)
 
 ## How to use?
 
