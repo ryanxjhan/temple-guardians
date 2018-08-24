@@ -1,20 +1,20 @@
-# Temple Guardians
+# FighterTheater
 
 ![show](art/show.gif)
 
-## Get Started
+## How to use?
 
-### Setup
+start virtural env
 
 ``` shell
 cd gameobjects-0.0.3
-python2 ./setup.py install
+python ./setup.py install
 
-python2 -m pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
-### Run 
+run:
 
 ``` shell
-python2 game
+python game
 ```

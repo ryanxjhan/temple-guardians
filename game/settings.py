@@ -18,8 +18,8 @@ class Settings(object):
         self.HEALTH_COVER_COLOR = (0, 255, 0)
         self.LEFT_HOME_LOCATION = (65, self.SCREEN_HEIGHT / 2)
         self.RIGHT_HOME_LOCATION = (self.SCREEN_WIDTH - 65, self.SCREEN_HEIGHT / 2)
-        self.DEFAULT_HERO_NUM = 10
-        self.DEFAULT_STORE_NUM = 10
+        self.DEFAULT_GUARD_NUM = 10
+        self.DEFAULT_STONE_NUM = 10
         self.DEFAULT_SCORE = 5
         self.DEFAULT_SEARCH_RANGE = 100.0
         self.DROP_RANGE = 30.0

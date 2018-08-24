@@ -53,7 +53,7 @@ class StateMachine(object):
         self.active_state.entry_actions()
 
 
-HERO_STATES = (
+GUARD_STATES = (
     'exploring',
     'seeking',
     'fighting',
@@ -61,24 +61,24 @@ HERO_STATES = (
 )
 
 
-class HeroStateExploring(State):
-    def __init__(self, hero):
-        State.__init__(self, HERO_STATES[0])
-        self.hero = hero
+class GuardStateExploring(State):
+    def __init__(self, guard):
+        State.__init__(self, GUARD_STATES[0])
+        self.guard = guard
 
     def random_destination(self):
         w, h = game_settings.SCREEN_SIZE
-        self.hero.destination = Vector2(randint(60, w - 60), randint(60, h - 60))
+        self.guard.destination = Vector2(randint(60, w - 60), randint(60, h - 60))
 
     def do_actions(self):
         if randint(1, 20) == 1:
             self.random_destination()
 
     def check_conditions(self):
-        location = self.hero.location
-        world = self.hero.world
+        location = self.guard.location
+        world = self.guard.world
 
-        enemy_type = self.hero.get_enemy_type()
+        enemy_type = self.guard.get_enemy_type()
         enemy = world.get_close_entity(
             enemy_type,
             location,
@@ -87,92 +87,92 @@ class HeroStateExploring(State):
 
         # exploring --> fighting
         if enemy is not None and location.get_distance_to(enemy.location) < 100.:
-            self.hero.enemy_id = enemy.id
-            return HERO_STATES[2]
+            self.guard.enemy_id = enemy.id
+            return GUARD_STATES[2]
 
-        energy_store = world.get_close_energy(self.hero.location)
+        energy_stone = world.get_close_energy(self.guard.location)
 
         # exploring --> seeking
-        if energy_store is not None:
-            self.hero.energy_id = energy_store.id
-            return HERO_STATES[1]
+        if energy_stone is not None:
+            self.guard.energy_id = energy_stone.id
+            return GUARD_STATES[1]
 
         return None
 
     def entry_actions(self):
-        self.hero.speed = 120. + randint(-30, 30)
+        self.guard.speed = 120. + randint(-30, 30)
         self.random_destination()
 
 
-class HeroStateSeeking(State):
-    def __init__(self, hero):
-        State.__init__(self, HERO_STATES[1])
-        self.hero = hero
+class GuardStateSeeking(State):
+    def __init__(self, guard):
+        State.__init__(self, GUARD_STATES[1])
+        self.guard = guard
         self.energy_id = None
 
     def check_conditions(self):
-        world = self.hero.world
-        location = self.hero.location
-        energy_store = world.get_energy_store(self.hero.energy_id)
+        world = self.guard.world
+        location = self.guard.location
+        energy_stone = world.get_energy_stone(self.guard.energy_id)
 
-        if energy_store is None:
-            return HERO_STATES[0]
+        if energy_stone is None:
+            return GUARD_STATES[0]
 
-        if location.get_distance_to(energy_store.location) < 5.0:
-            self.hero.carry(energy_store.image)
-            self.hero.world.remove_energy_store(energy_store)
-            return HERO_STATES[3]
+        if location.get_distance_to(energy_stone.location) < 5.0:
+            self.guard.carry(energy_stone.image)
+            self.guard.world.remove_energy_stone(energy_stone)
+            return GUARD_STATES[3]
 
-        self.hero.destination = energy_store.location
+        self.guard.destination = energy_stone.location
         return None
 
     def entry_actions(self):
-        energy_store = self.hero.world.get(self.hero.energy_id)
-        if energy_store is not None:
-            self.hero.destination = energy_store.location
-            self.hero.speed = 160. + randint(-20, 20)
+        energy_stone = self.guard.world.get(self.guard.energy_id)
+        if energy_stone is not None:
+            self.guard.destination = energy_stone.location
+            self.guard.speed = 160. + randint(-20, 20)
 
 
-class HeroStateDelivering(State):
-    def __init__(self, hero):
-        State.__init__(self, HERO_STATES[3])
-        self.hero = hero
+class GuardStateDelivering(State):
+    def __init__(self, guard):
+        State.__init__(self, GUARD_STATES[3])
+        self.guard = guard
 
     def check_conditions(self):
-        location = self.hero.location
-        world = self.hero.world
-        home_location = Vector2(*self.hero.get_home_location())
+        location = self.guard.location
+        world = self.guard.world
+        home_location = Vector2(*self.guard.get_home_location())
         distance_to_home = home_location.get_distance_to(location)
 
-        if distance_to_home < game_settings.DROP_RANGE or not self.hero.in_center():
+        if distance_to_home < game_settings.DROP_RANGE or not self.guard.in_center():
             if randint(1, 10) == 1:
-                self.hero.drop(world.background_layer)
-                self.hero.add_energy_score()
-                return HERO_STATES[0]
+                self.guard.drop(world.background_layer)
+                self.guard.add_energy_score()
+                return GUARD_STATES[0]
 
         return None
 
     def entry_actions(self):
-        home_location = Vector2(*self.hero.get_home_location())
-        self.hero.speed = 60.0
+        home_location = Vector2(*self.guard.get_home_location())
+        self.guard.speed = 60.0
         random_offset = Vector2(randint(-20, 20), randint(-20, 20))
-        self.hero.destination = home_location + random_offset
+        self.guard.destination = home_location + random_offset
 
 
-class HeroStateFighting(State):
-    def __init__(self, hero):
-        State.__init__(self, HERO_STATES[2])
-        self.hero = hero
+class GuardStateFighting(State):
+    def __init__(self, guard):
+        State.__init__(self, GUARD_STATES[2])
+        self.guard = guard
         self.got_kill = False
 
     def do_actions(self):
-        world = self.hero.world
-        enemy = world.get(self.hero.enemy_id)
+        world = self.guard.world
+        enemy = world.get(self.guard.enemy_id)
         if enemy is None:
             return
 
-        self.hero.destination = enemy.location
-        offset = self.hero.location.get_distance_to(enemy.location) < 15.
+        self.guard.destination = enemy.location
+        offset = self.guard.location.get_distance_to(enemy.location) < 15.
         random_seed = randint(1, 5) == 1
 
         if offset and random_seed:
@@ -184,16 +184,16 @@ class HeroStateFighting(State):
 
     def check_conditions(self):
         if self.got_kill:
-            return HERO_STATES[3]
+            return GUARD_STATES[3]
 
-        enemy = self.hero.world.get(self.hero.enemy_id)
+        enemy = self.guard.world.get(self.guard.enemy_id)
 
         if enemy is None:
-            return HERO_STATES[0]
+            return GUARD_STATES[0]
 
-        if self.hero.health < 2 / 3 * game_settings.MAX_HEALTH:
-            self.hero.destination = self.hero.get_home_location()
-            return HERO_STATES[0]
+        if self.guard.health < 2 / 3 * game_settings.MAX_HEALTH:
+            self.guard.destination = self.guard.get_home_location()
+            return GUARD_STATES[0]
 
         return None
 

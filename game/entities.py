@@ -32,37 +32,37 @@ class Entity(object):
             self.location += travel_distance * heading
 
 
-class EnergyStore(Entity):
+class EnergyStone(Entity):
     def __init__(self, world, image, energy_type):
-        super(EnergyStore, self).__init__(world, "energy", image)
+        super(EnergyStone, self).__init__(world, "energy", image)
         self.energy_type = energy_type
 
 
-class Hero(Entity):
-    def __init__(self, world, image, dead_image, hero_type):
-        super(Hero, self).__init__(world, "hero", image)
-        exploring_state = HeroStateExploring(self)
-        seeking_state = HeroStateSeeking(self)
-        delivering_state = HeroStateDelivering(self)
-        hunting_state = HeroStateFighting(self)
+class Guard(Entity):
+    def __init__(self, world, image, dead_image, guard_type):
+        super(Guard, self).__init__(world, "guard", image)
+        exploring_state = GuardStateExploring(self)
+        seeking_state = GuardStateSeeking(self)
+        delivering_state = GuardStateDelivering(self)
+        hunting_state = GuardStateFighting(self)
         self.brain.add_state(exploring_state)
         self.brain.add_state(seeking_state)
         self.brain.add_state(delivering_state)
         self.brain.add_state(hunting_state)
         self.dead_image = dead_image
         self.health = 25
-        self.carry_energy_store = None
-        self.hero_type = hero_type
+        self.carry_energy_stone = None
+        self.guard_type = guard_type
 
     def carry(self, image):
-        self.carry_energy_store = image
+        self.carry_energy_stone = image
 
     def drop(self, surface):
-        if not self.carry_energy_store:
+        if not self.carry_energy_stone:
             return
 
         self._draw_if_carry_energy(surface)
-        self.carry_energy_store = None
+        self.carry_energy_stone = None
 
     def bitten(self):
         self.health -= 2
@@ -82,19 +82,19 @@ class Hero(Entity):
         )
 
     def get_enemy_type(self):
-        return 'red-hero' if self.hero_type == 'green' else 'green-hero'
+        return 'red-guard' if self.guard_type == 'green' else 'green-guard'
 
     def in_center(self):
         return game_settings.RIGHT_HOME_LOCATION[0] > self.location.x > game_settings.LEFT_HOME_LOCATION[0]
 
     def get_home_location(self):
-        if self.hero_type == 'green':
+        if self.guard_type == 'green':
             return game_settings.LEFT_HOME_LOCATION
 
         return game_settings.RIGHT_HOME_LOCATION
 
     def add_energy_score(self):
-        if self.hero_type == 'green':
+        if self.guard_type == 'green':
             game_settings.left_score += game_settings.DEFAULT_SCORE
         else:
             game_settings.right_score += game_settings.DEFAULT_SCORE
@@ -106,15 +106,15 @@ class Hero(Entity):
         # self._draw_state_machine(surface)
         Entity.render(self, surface)
 
-        if not self.carry_energy_store:
+        if not self.carry_energy_stone:
             return
 
         self._draw_if_carry_energy(surface)
 
     def _draw_if_carry_energy(self, surface):
         x, y = self.location
-        w, h = self.carry_energy_store.get_size()
-        surface.blit(self.carry_energy_store, (x - w, y - h / 2))
+        w, h = self.carry_energy_stone.get_size()
+        surface.blit(self.carry_energy_stone, (x - w, y - h / 2))
 
     def _draw_health_number(self, surface):
         x, y = self.location
